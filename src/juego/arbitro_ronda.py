@@ -34,3 +34,11 @@ class ArbitroRonda:
         :return: True si el calzo fue correcto, False en caso contrario.
         """
         return self._total_pinta(estado_cachos, pinta) == cantidad
+
+    def validar_calzo(self, estado_cachos, cantidad_cachos, existe_jugador_con_un_dado=False):
+        if existe_jugador_con_un_dado:
+            return True
+        total_dados = sum(estado_cachos.values())
+        if total_dados >= (cantidad_cachos * 5) / 2:
+            return True
+        return False
