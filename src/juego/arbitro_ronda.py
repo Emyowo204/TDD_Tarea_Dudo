@@ -35,10 +35,17 @@ class ArbitroRonda:
         """
         return self._total_pinta(estado_cachos, pinta) == cantidad
 
-    def validar_calzo(self, estado_cachos, cantidad_cachos, existe_jugador_con_un_dado=False):
+    @staticmethod
+    def validar_calzo(estado_cachos, cantidad_cachos, existe_jugador_con_un_dado=False):
+        """
+        Valida si el calzo se puede hacer (hay más de la mitad de los dados en juego o
+        hay un jugador con un solo dado)
+        :param estado_cachos: Diccionario con la cantidad de dados con cierta pinta.
+        :param cantidad_cachos: Cantidad total de cachos en juego.
+        :param existe_jugador_con_un_dado: Booleano que indica si hay un jugador con un solo dado.
+        :return: True si el calzo es válido, False en caso contrario.
+        """
         if existe_jugador_con_un_dado:
             return True
-        total_dados = sum(estado_cachos.values())
-        if total_dados >= (cantidad_cachos * 5) / 2:
-            return True
-        return False
+
+        return sum(estado_cachos.values()) >= (cantidad_cachos * 5) / 2
