@@ -30,3 +30,11 @@ def test_quitar_dado():
     valores = cacho.mirar()
     # Evitar tener un número negativo de dados
     assert len(valores) == 0
+
+def test_agregar_dado():
+    valoresTest = ['As', 'Quina', 'As']
+    cacho = Cacho(valoresTest)
+    cacho.agregar_dado()
+    valores = cacho.mirar()
+    # La cantidad de dados se suma correctamente
+    assert len(valores) == (len(valoresTest)+1)
