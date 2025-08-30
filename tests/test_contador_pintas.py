@@ -4,7 +4,7 @@ from src.juego.contador_pintas import Contador_Pintas
 def test_contar_pintas_del_cacho():
     valoresIniciales = ['As', 'Quina', 'As', 'Tonto', 'Tren']
     cacho = Cacho(valoresIniciales)
-    valores = cacho.mirar
+    valores = cacho.mirar()
     contador = Contador_Pintas()
 
     total = contador.contar_pintas(valores, 'Quina')
