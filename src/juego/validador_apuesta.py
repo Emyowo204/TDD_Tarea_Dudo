@@ -5,10 +5,11 @@ class Validador_Apuesta:
     __pintas = ['As', 'Tonto', 'Tren', 'Cuadra', 'Quina', 'Sexto']
 
     def __convertir(self, pinta):
+        numero = 0
         for i in range(len(self.__pintas)):
             if self.__pintas[i] == pinta:
-                return i+1
-        return 0
+                numero = i+1
+        return numero
 
     def __esPar(self, numero):
         return numero % 2 == 0

@@ -3,7 +3,7 @@ from src.juego.validador_apuesta import Validador_Apuesta
 def test_validar_apuesta_comun_correcta():
     val = Validador_Apuesta()
     apuestaIniNum = 3
-    apuestaIniPin ='Tren'
+    apuestaIniPin = 'Tren'
     # La apuesta tiene un número mayor y misma pinta, es correcta
     assert val.validar(apuestaIniNum, apuestaIniPin, 5, 'Tren')
     # La apuesta tiene una pinta mayor y mismo número, es correcta
@@ -29,7 +29,7 @@ def test_validar_apuesta_comun_incorrecta():
 def test_validar_apuesta_par_a_as():
     val = Validador_Apuesta()
     apuestaIniNum = 6
-    apuestaIniPin ='Tren'
+    apuestaIniPin = 'Tren'
     # La apuesta tiene un número menor a la mitad del inicial (par), es incorrecta
     assert not val.validar(apuestaIniNum, apuestaIniPin, 2, 'As')
     # La apuesta tiene un número igual a la mitad del inicial (par), es incorrecta
@@ -49,7 +49,7 @@ def test_validar_apuesta_impar_a_as():
 def test_validar_apuesta_de_as():
     val = Validador_Apuesta()
     apuestaIniNum = 3
-    apuestaIniPin ='As'
+    apuestaIniPin = 'As'
     # La apuesta tiene un número menor al doble del inicial con cambio de pinta, es incorrecta
     assert not val.validar(apuestaIniNum, apuestaIniPin, 5, 'Tren')
     # La apuesta tiene un número igual al doble del inicial con cambio de pinta, es incorrecta
@@ -63,3 +63,11 @@ def test_validar_apuesta_de_as():
     assert not val.validar(apuestaIniNum, apuestaIniPin, 3, 'As')
     # La apuesta tiene un número mayor al inicial con al misma pinta, es correcta
     assert val.validar(apuestaIniNum, apuestaIniPin, 4, 'As')
+
+def test_validar_apuesta_no_iniciar_con_as():
+    val = Validador_Apuesta()
+    apuestaIniNum = 0
+    apuestaIniPin = None
+
+    # La apuesta inicial es incorrecta si contiene as
+    assert not val.validar(apuestaIniNum, apuestaIniPin, 2, 'As')
