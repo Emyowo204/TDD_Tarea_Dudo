@@ -18,11 +18,12 @@ def test_quitar_dado():
     valoresTest = ['As', 'Quina', 'As']
     cacho = Cacho(valoresTest)
     cacho.quitar_dado()
+    valores = cacho.mirar()
 
-    assert len(cacho.mirar) == (len(valoresTest)-1)
+    assert len(valores) == (len(valoresTest)-1)
 
-    valoresTest = []
-    cacho = Cacho(valoresTest)
+    cacho = Cacho([])
     cacho.quitar_dado()
+    valores = cacho.mirar()
 
-    assert len(cacho.mirar) == 0
+    assert len(valores) == 0

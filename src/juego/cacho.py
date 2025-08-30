@@ -19,3 +19,8 @@ class Cacho:
         self.__valores = []
         for i in range(self.__cantidad):
             self.__valores.append(self.__dado.lanzar())
+
+    def quitar_dado(self):
+        if self.__cantidad > 0:
+            self.__cantidad -= 1
+            self.agitar()
