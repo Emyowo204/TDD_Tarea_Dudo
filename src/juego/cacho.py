@@ -24,3 +24,7 @@ class Cacho:
         if self.__cantidad > 0:
             self.__cantidad -= 1
             self.agitar()
+
+    def agregar_dado(self):
+        self.__cantidad += 1
+        self.agitar()
