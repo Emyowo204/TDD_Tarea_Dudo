@@ -18,3 +18,26 @@ class TestGestorPartida:
 
             # El turno inicial debe ser del jugador 6 (obtuvo el número más alto)
             assert gestor.turno_actual == 5
+
+    def test_num_jugadores_invalido(self):
+
+        # Probar con un número de jugadores inválido (menos de 2)
+        with pytest.raises(ValueError):
+            GestorPartida(0)
+        with pytest.raises(ValueError):
+            GestorPartida(1)
+
+        # Probar con otro tipo de dato
+        with pytest.raises(TypeError):
+            GestorPartida("tres")
+
+    def test_empate_iniciar_partida(self, gestor):
+
+        # Primera ronda: empate entre jugadores 1 y 4
+        with patch('src.juego.gestor_partida.generar_lista_aleatoria', side_effect=[
+            [3, 2, 1, 3, 2, 1],     # Empatan jugador 1 y 4
+            [2, 5]                  # Relanzan solo los empatados
+        ]):
+            gestor.iniciar_partida()
+            # El turno debe ser del jugador 4 (5 es el mayor en el relanzamiento)
+            assert gestor.turno_actual == 3
