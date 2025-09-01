@@ -15,7 +15,7 @@ class GestorPartida:
         self.turno_actual = None
         self.num_jugadores = num_jugadores
         self.jugadores = [self.inicializar_jugadores() for _ in range(num_jugadores)]
-        self.apuesta_inicial = (0, None)  # Apuesta inicial por defecto
+        self.apuesta_actual = (0, None)  # Apuesta inicial por defecto
 
     def inicializar_jugadores(self):
         """
@@ -68,9 +68,16 @@ class GestorPartida:
                     conteo[dado] += 1
         return conteo
 
-    def procesar_apuesta(self, apuesta):
+    def procesar_apuesta(self, apuesta_nueva):
+        """
+        Procesa una nueva apuesta, validándola contra la apuesta actual.
+        Si la apuesta es válida, avanza el turno al siguiente jugador.
+        :param apuesta_nueva: Tuple (número, pinta) de la nueva apuesta.
+        :raises ValueError: Si la apuesta es inválida.
+        """
         validador = Validador_Apuesta()
-        if validador.validar(self.apuesta_inicial[0], self.apuesta_inicial[1], apuesta[0], apuesta[1]):
+        if validador.validar(self.apuesta_actual[0], self.apuesta_actual[1], apuesta_nueva[0], apuesta_nueva[1]):
+            self.apuesta_actual = apuesta_nueva
             self.avanzar_turno()
         else:
             raise ValueError("Apuesta inválida.")
