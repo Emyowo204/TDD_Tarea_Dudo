@@ -1,4 +1,5 @@
 from src.juego.cacho import Cacho
+from src.juego.validador_apuesta import Validador_Apuesta
 from src.servicios.generador_aleatorio import generar_lista_aleatoria
 
 class GestorPartida:
@@ -14,6 +15,7 @@ class GestorPartida:
         self.turno_actual = None
         self.num_jugadores = num_jugadores
         self.jugadores = [self.inicializar_jugadores() for _ in range(num_jugadores)]
+        self.apuesta_inicial = (0, None)  # Apuesta inicial por defecto
 
     def inicializar_jugadores(self):
         """
@@ -65,3 +67,10 @@ class GestorPartida:
                 if dado in conteo:
                     conteo[dado] += 1
         return conteo
+
+    def procesar_apuesta(self, apuesta):
+        validador = Validador_Apuesta()
+        if validador.validar(self.apuesta_inicial[0], self.apuesta_inicial[1], apuesta[0], apuesta[1]):
+            self.avanzar_turno()
+        else:
+            raise ValueError("Apuesta inválida.")
