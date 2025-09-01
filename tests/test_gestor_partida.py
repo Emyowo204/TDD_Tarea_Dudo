@@ -1,11 +1,21 @@
 from unittest.mock import patch
 import pytest
 from src.juego.gestor_partida import GestorPartida
+from src.juego.cacho import Cacho
 
 class TestGestorPartida:
     @pytest.fixture
+    # Proveer un gestor de partida con 6 jugadores para las pruebas
     def gestor(self):
         return GestorPartida(6)
+
+    @staticmethod
+    # Crear cachos con valores específicos para pruebas
+    def crear_cachos():
+        return [Cacho([1, 2, 3, 4, 5]),
+                Cacho([2, 3, 4, 5, 6]),
+                Cacho([3, 4, 5, 6, 6]),
+                Cacho([4, 5, 6, 6, 6])]
 
     def test_inicializar_jugadores(self, gestor):
 
@@ -54,12 +64,8 @@ class TestGestorPartida:
         assert gestor.turno_actual == 0
 
     def test_convertir_diccionario(self, gestor):
-        gestor.jugadores = [
-            [1, 2, 3, 4, 5],
-            [2, 3, 4, 5, 6],
-            [3, 4, 5, 6, 6],
-            [4, 5, 6, 6, 6]
-        ]
+        # Asignar dados específicos a los jugadores para la prueba
+        gestor.jugadores = self.crear_cachos()
         diccionario = gestor._convertir_a_diccionario()
         # Verificar que se ha creado un diccionario
         assert isinstance(diccionario, dict)

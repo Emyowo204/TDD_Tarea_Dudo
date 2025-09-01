@@ -53,3 +53,20 @@ class GestorPartida:
         Avanza el turno al siguiente jugador en orden cíclico.
         """
         self.turno_actual = (self.turno_actual + 1) % self.num_jugadores
+
+    def _convertir_a_diccionario(self):
+        """
+        Convierte la lista de jugadores a un diccionario para facilitar su manejo.
+        :return: Diccionario con los jugadores y sus respectivos dados.
+        """
+        c1, c2, c3, c4, c5, c6 = 0, 0, 0, 0, 0, 0
+        for jugador in self.jugadores:
+            cacho = jugador.mirar()
+            for i in range(len(cacho)):
+                if cacho[i] is 1: c1+=1
+                elif cacho[i] is 2: c2+=1
+                elif cacho[i] is 3: c3+=1
+                elif cacho[i] is 4: c4+=1
+                elif cacho[i] is 5: c5+=1
+                elif cacho[i] is 6: c6+=1
+        return {1: c1, 2: c2, 3: c3, 4: c4, 5: c5, 6: c6}
