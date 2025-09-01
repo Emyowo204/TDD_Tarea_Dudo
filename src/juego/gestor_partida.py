@@ -17,6 +17,8 @@ class GestorPartida:
         self.num_jugadores = num_jugadores
         self.jugadores = [self.inicializar_jugadores() for _ in range(num_jugadores)]
         self.apuesta_actual = (0, None)  # Apuesta inicial por defecto
+        self.validador = Validador_Apuesta()
+        self.arbitro = ArbitroRonda()
 
     def inicializar_jugadores(self):
         """
@@ -76,29 +78,52 @@ class GestorPartida:
         :param apuesta_nueva: Tuple (número, pinta) de la nueva apuesta.
         :raises ValueError: Si la apuesta es inválida.
         """
-        validador = Validador_Apuesta()
-        if validador.validar(self.apuesta_actual[0], self.apuesta_actual[1], apuesta_nueva[0], apuesta_nueva[1]):
+        if self.validador.validar(self.apuesta_actual[0], self.apuesta_actual[1], apuesta_nueva[0], apuesta_nueva[1]):
             self.apuesta_actual = apuesta_nueva
             self.avanzar_turno()
         else:
             raise ValueError("Apuesta inválida.")
 
     def llamar_arbitro(self, motivo):
-        arbitro = ArbitroRonda()
+        """
+        Llama al árbitro para resolver una duda o calzo.
+        :param motivo: 'Duda' o 'calzo' indicando el motivo de la llamada.
+        :raises ValueError: Si el motivo es inválido.
+        """
         estado_cachos = self._convertir_a_diccionario()
         existe_jugador_con_un_dado = any(len(jugador.mirar()) == 1 for jugador in self.jugadores)
+
         if motivo == 'duda':
-            if arbitro.resultado_duda(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0], existe_jugador_con_un_dado):
-                self.jugadores[self.turno_actual - 1].quitar_dado()
-            else:
-                self.jugadores[self.turno_actual].quitar_dado()
+            self._resolver_duda(self.arbitro, estado_cachos, existe_jugador_con_un_dado)
         elif motivo == 'calzo':
-            if arbitro.resultado_calzo(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0], existe_jugador_con_un_dado):
-                self.jugadores[self.turno_actual].agregar_dado()
-            else:
-                self.jugadores[self.turno_actual].quitar_dado()
+            self._resolver_calzo(self.arbitro, estado_cachos, existe_jugador_con_un_dado)
         else:
             raise ValueError("Motivo inválido. Debe ser 'duda' o 'calzo'.")
 
-        # Reiniciar la apuesta actual después de resolver la duda o calzo
         self.apuesta_actual = (0, None)
+
+    def _resolver_duda(self, arbitro, estado_cachos, existe_jugador_con_un_dado):
+        """
+        Resuelve una duda llamando al árbitro y actualizando los dados de los jugadores según el resultado.
+        :param arbitro: Instancia del árbitro para resolver la duda.
+        :param estado_cachos: Diccionario con el conteo de dados.
+        :param existe_jugador_con_un_dado: Booleano indicando si hay algún jugador con un solo dado.
+        """
+        if arbitro.resultado_duda(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0],
+                                  existe_jugador_con_un_dado):
+            self.jugadores[self.turno_actual - 1].quitar_dado()
+        else:
+            self.jugadores[self.turno_actual].quitar_dado()
+
+    def _resolver_calzo(self, arbitro, estado_cachos, existe_jugador_con_un_dado):
+        """
+        Resuelve un calzo llamando al árbitro y actualizando los dados del jugador actual según el resultado.
+        :param arbitro: Instancia del árbitro para resolver el calzo.
+        :param estado_cachos: Diccionario con el conteo de dados.
+        :param existe_jugador_con_un_dado: Booleano indicando si hay algún jugador con un solo dado.
+        """
+        if arbitro.resultado_calzo(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0],
+                                   existe_jugador_con_un_dado):
+            self.jugadores[self.turno_actual].agregar_dado()
+        else:
+            self.jugadores[self.turno_actual].quitar_dado()
