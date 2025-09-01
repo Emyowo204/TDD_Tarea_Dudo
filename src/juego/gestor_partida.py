@@ -31,11 +31,19 @@ class GestorPartida:
         En caso de empate, los jugadores empatados relanzan sus dados.
         """
         dados_iniciales = generar_lista_aleatoria(self.num_jugadores, 1, 6)
-        if len(set(dados_iniciales)) != len(dados_iniciales):
-            # Hay empate, relanzar solo los empatados
-            max_valor = max(dados_iniciales)
-            empatados = [i for i, valor in enumerate(dados_iniciales) if valor == max_valor]
-            nuevos_dados = generar_lista_aleatoria(len(empatados), 1, 6)
-            for idx, jugador_idx in enumerate(empatados):
-                dados_iniciales[jugador_idx] = nuevos_dados[idx]
-        self.turno_actual = dados_iniciales.index(max(dados_iniciales))
+        self.turno_actual = self._determinar_jugador_inicial(dados_iniciales)
+
+    @staticmethod
+    def _determinar_jugador_inicial(dados):
+        max_valor = max(dados)
+        jugadores_max_valor = [i for i, valor in enumerate(dados) if valor == max_valor]
+        # Si solo hay un jugador con el valor máximo, retorna su índice
+        if len(jugadores_max_valor) == 1:
+            return jugadores_max_valor[0]
+        # Relanzar solo los empatados
+        nuevos_dados = generar_lista_aleatoria(len(jugadores_max_valor), 1, 6)
+        dados_empate = [0] * len(dados)
+        for idx, jugador_idx in enumerate(jugadores_max_valor):
+            dados_empate[jugador_idx] = nuevos_dados[idx]
+        # Llamada recursiva solo con los nuevos valores de los empatados
+        return GestorPartida._determinar_jugador_inicial(dados_empate)
