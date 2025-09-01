@@ -41,3 +41,14 @@ class TestGestorPartida:
             gestor.iniciar_partida()
             # El turno debe ser del jugador 4 (5 es el mayor en el relanzamiento)
             assert gestor.turno_actual == 3
+
+    def test_determinar_siguiente_jugador(self, gestor):
+        gestor.turno_actual = 2
+        gestor.avanzar_turno()
+        # El siguiente jugador debe ser el 3
+        assert gestor.turno_actual == 3
+
+        gestor.turno_actual = 5
+        gestor.avanzar_turno()
+        # El siguiente jugador debe ser el 0 (ciclo)
+        assert gestor.turno_actual == 0
