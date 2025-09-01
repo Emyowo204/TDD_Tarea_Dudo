@@ -13,7 +13,7 @@ class TestGestorPartida:
         assert len(gestor.jugadores) == 6
 
     def test_iniciar_partida(self, gestor):
-        with patch('generar_lista_aleatoria', return_value=[1, 2, 3, 4, 5, 6]):
+        with patch('src.juego.gestor_partida.generar_lista_aleatoria', return_value=[1, 2, 3, 4, 5, 6]):
             gestor.iniciar_partida()
 
             # El turno inicial debe ser del jugador 6 (obtuvo el número más alto)
