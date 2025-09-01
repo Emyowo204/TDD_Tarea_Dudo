@@ -47,3 +47,9 @@ class GestorPartida:
             dados_empate[jugador_idx] = nuevos_dados[idx]
         # Llamada recursiva solo con los nuevos valores de los empatados
         return GestorPartida._determinar_jugador_inicial(dados_empate)
+
+    def avanzar_turno(self):
+        """
+        Avanza el turno al siguiente jugador en orden cíclico.
+        """
+        self.turno_actual = (self.turno_actual + 1) % self.num_jugadores
