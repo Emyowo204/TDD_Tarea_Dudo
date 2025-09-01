@@ -87,7 +87,12 @@ class GestorPartida:
         arbitro = ArbitroRonda()
         estado_cachos = self._convertir_a_diccionario()
         existe_jugador_con_un_dado = any(len(jugador.mirar()) == 1 for jugador in self.jugadores)
-        if motivo == 'calzo':
+        if motivo == 'duda':
+            if arbitro.resultado_duda(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0], existe_jugador_con_un_dado):
+                self.jugadores[self.turno_actual - 1].quitar_dado()
+            else:
+                self.jugadores[self.turno_actual].quitar_dado()
+        elif motivo == 'calzo':
             if arbitro.resultado_calzo(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0], existe_jugador_con_un_dado):
                 self.jugadores[self.turno_actual].agregar_dado()
             else:
