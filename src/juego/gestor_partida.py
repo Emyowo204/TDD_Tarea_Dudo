@@ -1,6 +1,7 @@
 from src.juego.cacho import Cacho
 from src.juego.validador_apuesta import Validador_Apuesta
 from src.servicios.generador_aleatorio import generar_lista_aleatoria
+from src.juego.arbitro_ronda import ArbitroRonda
 
 class GestorPartida:
     VALORES_INICIALES = [1, 2, 3, 4, 5, 6]
@@ -81,3 +82,18 @@ class GestorPartida:
             self.avanzar_turno()
         else:
             raise ValueError("Apuesta inválida.")
+
+    def llamar_arbitro(self, motivo):
+        arbitro = ArbitroRonda()
+        estado_cachos = self._convertir_a_diccionario()
+        existe_jugador_con_un_dado = any(len(jugador.mirar()) == 1 for jugador in self.jugadores)
+        if motivo == 'calzo':
+            if arbitro.resultado_calzo(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0], existe_jugador_con_un_dado):
+                self.jugadores[self.turno_actual].agregar_dado()
+            else:
+                self.jugadores[self.turno_actual].quitar_dado()
+        else:
+            raise ValueError("Motivo inválido. Debe ser 'duda' o 'calzo'.")
+
+        # Reiniciar la apuesta actual después de resolver la duda o calzo
+        self.apuesta_actual = (0, None)

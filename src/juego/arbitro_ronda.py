@@ -2,8 +2,16 @@ class ArbitroRonda:
     def __init__(self):
         pass
 
-    @staticmethod
-    def _total_pinta(estado_cachos, pinta, obligar = False):
+    __pintas = ['As', 'Tonto', 'Tren', 'Cuadra', 'Quina', 'Sexto']
+
+    def __convertir(self, pinta):
+        numero = 0
+        for i in range(len(self.__pintas)):
+            if self.__pintas[i] == pinta:
+                numero = i+1
+        return numero
+
+    def _total_pinta(self, estado_cachos, pinta, obligar = False):
         """
         Retorna la cantidad total de cachos que hay de una pinta determinada,
         incluyendo los cachos comodín (pinta 1).
@@ -12,6 +20,7 @@ class ArbitroRonda:
         :param obligar: Indica si existe un jugador con un solo dado.
         :return: Cantidad total de cachos de la pinta especificada.
         """
+        pinta = self.__convertir(pinta)
         if not obligar:
             if pinta != 1:
                 return estado_cachos.get(pinta, 0) + estado_cachos.get(1, 0)
