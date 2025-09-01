@@ -109,3 +109,21 @@ class TestGestorPartida:
         # El calzo es incorrecto, jugador 2 pierde un dado
         assert len(gestor.jugadores[1].mirar()) == 4
         assert gestor.apuesta_actual == (0, None)
+
+    def test_llamar_arbitro_duda_incorrecta(self, gestor):
+        gestor.jugadores = self.crear_cachos()
+        gestor.turno_actual = 1
+        gestor.procesar_apuesta((3, 'Tonto'))
+        gestor.llamar_arbitro("duda")
+        # La duda es incorrecta, jugador 3 pierde un dado
+        assert len(gestor.jugadores[2].mirar()) == 4
+        assert gestor.apuesta_actual == (0, None)
+
+    def test_llamar_arbitro_duda_correcta(self, gestor):
+        gestor.jugadores = self.crear_cachos()
+        gestor.turno_actual = 3
+        gestor.procesar_apuesta((4, 'Tonto'))
+        gestor.llamar_arbitro("duda")
+        # La duda es correcta, jugador 4 pierde un dado
+        assert len(gestor.jugadores[3].mirar()) == 4
+        assert gestor.apuesta_actual == (0, None)
