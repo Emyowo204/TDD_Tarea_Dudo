@@ -52,3 +52,18 @@ class TestGestorPartida:
         gestor.avanzar_turno()
         # El siguiente jugador debe ser el 0 (ciclo)
         assert gestor.turno_actual == 0
+
+    def test_convertir_diccionario(self, gestor):
+        gestor.jugadores = [
+            [1, 2, 3, 4, 5],
+            [2, 3, 4, 5, 6],
+            [3, 4, 5, 6, 6],
+            [4, 5, 6, 6, 6]
+        ]
+        diccionario = gestor._convertir_a_diccionario()
+        # Verificar que se ha creado un diccionario
+        assert isinstance(diccionario, dict)
+
+        esperado = {1:1, 2:2, 3:3, 4:4, 5:4, 6:6}
+        # Verificar que el diccionario generado es correcto
+        assert diccionario == esperado
