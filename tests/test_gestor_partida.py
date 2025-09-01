@@ -73,3 +73,21 @@ class TestGestorPartida:
         esperado = {1:1, 2:2, 3:3, 4:4, 5:4, 6:6}
         # Verificar que el diccionario generado es correcto
         assert diccionario == esperado
+
+    def test_procesar_apuestas(self, gestor):
+        gestor.jugadores = self.crear_cachos()
+        apuestas = [
+            (2, 'Tonto'),   # válida
+            (0, 'Tonto'),   # inválida
+            (3, 'Tonto')    # válida
+        ]
+        turnos = [1, 1, 2]  # El turno no avanza tras la apuesta inválida
+
+        gestor.turno_actual = 0
+        for apuesta, esperado_turno in zip(apuestas, turnos):
+            if apuesta[0] == 0:
+                with pytest.raises(ValueError):
+                    gestor.procesar_apuesta(apuesta)
+            else:
+                gestor.procesar_apuesta(apuesta)
+            assert gestor.turno_actual == esperado_turno
