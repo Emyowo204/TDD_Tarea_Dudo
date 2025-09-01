@@ -20,6 +20,15 @@ class GestorPartida:
         self.validador = Validador_Apuesta()
         self.arbitro = ArbitroRonda()
 
+    __pintas = ['As', 'Tonto', 'Tren', 'Cuadra', 'Quina', 'Sexto']
+
+    def __convertir(self, pinta):
+        numero = 0
+        for i in range(len(self.__pintas)):
+            if self.__pintas[i] == pinta:
+                numero = i+1
+        return numero
+
     def inicializar_jugadores(self):
         """
         Inicializa un jugador con un cacho.
@@ -109,7 +118,7 @@ class GestorPartida:
         :param estado_cachos: Diccionario con el conteo de dados.
         :param existe_jugador_con_un_dado: Booleano indicando si hay algún jugador con un solo dado.
         """
-        if arbitro.resultado_duda(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0],
+        if arbitro.resultado_duda(estado_cachos, self.__convertir(self.apuesta_actual[1]), self.apuesta_actual[0],
                                   existe_jugador_con_un_dado):
             self.jugadores[self.turno_actual - 1].quitar_dado()
         else:
@@ -122,7 +131,7 @@ class GestorPartida:
         :param estado_cachos: Diccionario con el conteo de dados.
         :param existe_jugador_con_un_dado: Booleano indicando si hay algún jugador con un solo dado.
         """
-        if arbitro.resultado_calzo(estado_cachos, self.apuesta_actual[1], self.apuesta_actual[0],
+        if arbitro.resultado_calzo(estado_cachos, self.__convertir(self.apuesta_actual[1]), self.apuesta_actual[0],
                                    existe_jugador_con_un_dado):
             self.jugadores[self.turno_actual].agregar_dado()
         else:
