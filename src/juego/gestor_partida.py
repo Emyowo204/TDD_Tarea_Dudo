@@ -67,6 +67,8 @@ class GestorPartida:
         Avanza el turno al siguiente jugador en orden cíclico.
         """
         self.turno_actual = (self.turno_actual + 1) % self.num_jugadores
+        if len(self.jugadores[self.turno_actual].mirar()) == 0:
+            self.avanzar_turno()
 
     def _convertir_a_diccionario(self):
         """
