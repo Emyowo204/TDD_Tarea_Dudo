@@ -121,9 +121,20 @@ class TestGestorPartida:
 
     def test_llamar_arbitro_duda_correcta(self, gestor):
         gestor.jugadores = self.crear_cachos()
+        gestor.num_jugadores = 4
         gestor.turno_actual = 3
         gestor.procesar_apuesta((4, 'Tonto'))
         gestor.llamar_arbitro("duda")
         # La duda es correcta, jugador 4 pierde un dado
         assert len(gestor.jugadores[3].mirar()) == 4
         assert gestor.apuesta_actual == (0, None)
+
+    def test_jugador_eliminado(self, gestor):
+        gestor.jugadores = self.crear_cachos()
+        gestor.num_jugadores = 5
+        gestor.jugadores.append(Cacho([]))
+        gestor.turno_actual = 3
+        gestor.procesar_apuesta((2, 'Tonto'))
+
+        # Jugador 5 no tiene dados, debe ser saltado
+        assert gestor.turno_actual == 0
