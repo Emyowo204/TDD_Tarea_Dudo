@@ -2,6 +2,7 @@ from src.juego.cacho import Cacho
 from src.juego.validador_apuesta import Validador_Apuesta
 from src.servicios.generador_aleatorio import generar_lista_aleatoria
 from src.juego.arbitro_ronda import ArbitroRonda
+from collections import deque
 
 class GestorPartida:
     VALORES_INICIALES = [1, 2, 3, 4, 5, 6]
@@ -13,10 +14,10 @@ class GestorPartida:
         """
         if num_jugadores < 2 or not isinstance(num_jugadores, int):
             raise ValueError("Deben haber al menos dos jugadores.")
-        self.turno_actual = None
-        self.num_jugadores = num_jugadores
+
         self.jugadores = [self.inicializar_jugadores() for _ in range(num_jugadores)]
         self.apuesta_actual = (0, None)  # Apuesta inicial por defecto
+        self.turno = deque(range(num_jugadores))
         self.validador = Validador_Apuesta()
         self.arbitro = ArbitroRonda()
 
@@ -44,8 +45,8 @@ class GestorPartida:
         El jugador con el dado más alto comienza.
         En caso de empate, los jugadores empatados relanzan sus dados.
         """
-        dados_iniciales = generar_lista_aleatoria(self.num_jugadores, 1, 6)
-        self.turno_actual = self._determinar_jugador_inicial(dados_iniciales)
+        dados_iniciales = generar_lista_aleatoria(len(self.jugadores), 1, 6)
+        self.turno.rotate(-self._determinar_jugador_inicial(dados_iniciales))
 
     @staticmethod
     def _determinar_jugador_inicial(dados):
@@ -66,9 +67,7 @@ class GestorPartida:
         """
         Avanza el turno al siguiente jugador en orden cíclico.
         """
-        self.turno_actual = (self.turno_actual + 1) % self.num_jugadores
-        if len(self.jugadores[self.turno_actual].mirar()) == 0:
-            self.avanzar_turno()
+        self.turno.rotate(-1)
 
     def _convertir_a_diccionario(self):
         """
@@ -106,8 +105,10 @@ class GestorPartida:
 
         if motivo == 'duda':
             self._resolver_duda(self.arbitro, estado_cachos, existe_jugador_con_un_dado)
+            self._determinar_jugador_eliminado()
         elif motivo == 'calzo':
             self._resolver_calzo(self.arbitro, estado_cachos, existe_jugador_con_un_dado)
+            self._determinar_jugador_eliminado()
         else:
             raise ValueError("Motivo inválido. Debe ser 'duda' o 'calzo'.")
 
@@ -122,9 +123,10 @@ class GestorPartida:
         """
         if arbitro.resultado_duda(estado_cachos, self.__convertir(self.apuesta_actual[1]), self.apuesta_actual[0],
                                   existe_jugador_con_un_dado):
-            self.jugadores[self.turno_actual - 1].quitar_dado()
+            self.jugadores[self.turno[-1]].quitar_dado()
+            self.turno.rotate(1)
         else:
-            self.jugadores[self.turno_actual].quitar_dado()
+            self.jugadores[self.turno[0]].quitar_dado()
 
     def _resolver_calzo(self, arbitro, estado_cachos, existe_jugador_con_un_dado):
         """
@@ -135,6 +137,10 @@ class GestorPartida:
         """
         if arbitro.resultado_calzo(estado_cachos, self.__convertir(self.apuesta_actual[1]), self.apuesta_actual[0],
                                    existe_jugador_con_un_dado):
-            self.jugadores[self.turno_actual].agregar_dado()
+            self.jugadores[self.turno[0]].agregar_dado()
         else:
-            self.jugadores[self.turno_actual].quitar_dado()
+            self.jugadores[self.turno[0]].quitar_dado()
+
+    def _determinar_jugador_eliminado(self):
+        if len(self.jugadores[self.turno[0]].mirar()) == 0:
+            self.turno = deque(i for i in self.turno if i != self.turno[0])

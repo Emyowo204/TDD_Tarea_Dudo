@@ -27,7 +27,7 @@ class TestGestorPartida:
             gestor.iniciar_partida()
 
             # El turno inicial debe ser del jugador 6 (obtuvo el número más alto)
-            assert gestor.turno_actual == 5
+            assert gestor.turno[0] == 5
 
     def test_num_jugadores_invalido(self):
 
@@ -50,18 +50,18 @@ class TestGestorPartida:
         ]):
             gestor.iniciar_partida()
             # El turno debe ser del jugador 4 (5 es el mayor en el relanzamiento)
-            assert gestor.turno_actual == 3
+            assert gestor.turno[0] == 3
 
     def test_determinar_siguiente_jugador(self, gestor):
-        gestor.turno_actual = 2
+        gestor.turno.rotate(-2)
         gestor.avanzar_turno()
         # El siguiente jugador debe ser el 3
-        assert gestor.turno_actual == 3
+        assert gestor.turno[0] == 3
 
-        gestor.turno_actual = 5
+        gestor.turno.rotate(-2)
         gestor.avanzar_turno()
         # El siguiente jugador debe ser el 0 (ciclo)
-        assert gestor.turno_actual == 0
+        assert gestor.turno[0] == 0
 
     def test_convertir_diccionario(self, gestor):
         # Asignar dados específicos a los jugadores para la prueba
@@ -83,18 +83,17 @@ class TestGestorPartida:
         ]
         turnos = [1, 1, 2]  # El turno no avanza tras la apuesta inválida
 
-        gestor.turno_actual = 0
         for apuesta, esperado_turno in zip(apuestas, turnos):
             if apuesta[0] == 0:
                 with pytest.raises(ValueError):
                     gestor.procesar_apuesta(apuesta)
             else:
                 gestor.procesar_apuesta(apuesta)
-            assert gestor.turno_actual == esperado_turno
+            assert gestor.turno[0] == esperado_turno
 
     def test_llamar_arbitro_calzo_correcto(self, gestor):
         gestor.jugadores = self.crear_cachos()
-        gestor.turno_actual = 0
+        gestor.turno[0] = 0
         gestor.procesar_apuesta((3, 'Tonto'))
         gestor.llamar_arbitro("calzo")
         # El calzo es correcto, jugador 2 debe ganar un dado
@@ -103,7 +102,6 @@ class TestGestorPartida:
 
     def test_llamar_arbitro_calzo_incorrecto(self, gestor):
         gestor.jugadores = self.crear_cachos()
-        gestor.turno_actual = 0
         gestor.procesar_apuesta((4, 'Tonto'))
         gestor.llamar_arbitro("calzo")
         # El calzo es incorrecto, jugador 2 pierde un dado
@@ -112,7 +110,7 @@ class TestGestorPartida:
 
     def test_llamar_arbitro_duda_incorrecta(self, gestor):
         gestor.jugadores = self.crear_cachos()
-        gestor.turno_actual = 1
+        gestor.turno.rotate(-1)
         gestor.procesar_apuesta((3, 'Tonto'))
         gestor.llamar_arbitro("duda")
         # La duda es incorrecta, jugador 3 pierde un dado
@@ -121,8 +119,7 @@ class TestGestorPartida:
 
     def test_llamar_arbitro_duda_correcta(self, gestor):
         gestor.jugadores = self.crear_cachos()
-        gestor.num_jugadores = 4
-        gestor.turno_actual = 3
+        gestor.turno.rotate(-3)
         gestor.procesar_apuesta((4, 'Tonto'))
         gestor.llamar_arbitro("duda")
         # La duda es correcta, jugador 4 pierde un dado
@@ -131,10 +128,11 @@ class TestGestorPartida:
 
     def test_jugador_eliminado(self, gestor):
         gestor.jugadores = self.crear_cachos()
-        gestor.num_jugadores = 5
         gestor.jugadores.append(Cacho([]))
-        gestor.turno_actual = 3
+        gestor.turno.pop()
+        gestor.turno.rotate(-3)
         gestor.procesar_apuesta((2, 'Tonto'))
+        gestor._determinar_jugador_eliminado()
 
         # Jugador 5 no tiene dados, debe ser saltado
-        assert gestor.turno_actual == 0
+        assert gestor.turno[0] == 0
