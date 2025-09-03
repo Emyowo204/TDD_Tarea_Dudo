@@ -158,3 +158,14 @@ class TestGestorPartida:
         # El jugador 4 ya usó obligar, no debe activarse de nuevo
         assert gestor.ronda_obligar == False
         assert gestor.obligar_usado[4] == True
+
+    def test_jugador_gana(self):
+        gestor = GestorPartida(2)
+        gestor.inicializar_jugadores()
+        gestor.jugadores = [Cacho([1]), Cacho([])]
+        gestor.procesar_apuesta((1, 'Tonto'))
+        gestor._determinar_jugador_eliminado_u_obligar()
+
+        # El jugador 1 debe ser el ganador
+        assert len(gestor.turno) == 1
+        assert gestor.ganador == 0
