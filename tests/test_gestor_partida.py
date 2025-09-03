@@ -132,7 +132,29 @@ class TestGestorPartida:
         gestor.turno.pop()
         gestor.turno.rotate(-3)
         gestor.procesar_apuesta((2, 'Tonto'))
-        gestor._determinar_jugador_eliminado()
+        gestor._determinar_jugador_eliminado_u_obligar()
 
         # Jugador 5 no tiene dados, debe ser saltado
         assert gestor.turno[0] == 0
+
+    def test_obligar(self, gestor):
+        gestor.jugadores = self.crear_cachos()
+        gestor.jugadores.append(Cacho([1]))
+        gestor.turno.pop()
+        gestor.turno.rotate(-3)
+        gestor.procesar_apuesta((2, 'Tonto'))
+
+        # El jugador 4 no debería hacer usado su obligar
+        assert gestor.obligar_usado[4] == False
+
+        gestor._determinar_jugador_eliminado_u_obligar()
+        # El jugador 4 tiene 1 dado por primera vez, debe activar obligar
+        assert gestor.ronda_obligar == True
+        assert gestor.obligar_usado[4] == True
+
+        # Supongamos el jugador gano un dado, pero luego lo volvió a perder
+        gestor.ronda_obligar = False
+        gestor._determinar_jugador_eliminado_u_obligar()
+        # El jugador 4 ya usó obligar, no debe activarse de nuevo
+        assert gestor.ronda_obligar == False
+        assert gestor.obligar_usado[4] == True
