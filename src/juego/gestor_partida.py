@@ -20,6 +20,8 @@ class GestorPartida:
         self.turno = deque(range(num_jugadores))
         self.validador = Validador_Apuesta()
         self.arbitro = ArbitroRonda()
+        self.ronda_obligar = False
+        self.obligar_usado = {i: False for i in range(num_jugadores)}
 
     __pintas = ['As', 'Tonto', 'Tren', 'Cuadra', 'Quina', 'Sexto']
 
@@ -101,46 +103,47 @@ class GestorPartida:
         :raises ValueError: Si el motivo es inválido.
         """
         estado_cachos = self._convertir_a_diccionario()
-        existe_jugador_con_un_dado = any(len(jugador.mirar()) == 1 for jugador in self.jugadores)
 
         if motivo == 'duda':
-            self._resolver_duda(self.arbitro, estado_cachos, existe_jugador_con_un_dado)
-            self._determinar_jugador_eliminado()
+            self._resolver_duda(self.arbitro, estado_cachos)
+            self._determinar_jugador_eliminado_u_obligar()
         elif motivo == 'calzo':
-            self._resolver_calzo(self.arbitro, estado_cachos, existe_jugador_con_un_dado)
-            self._determinar_jugador_eliminado()
+            self._resolver_calzo(self.arbitro, estado_cachos)
+            self._determinar_jugador_eliminado_u_obligar()
         else:
             raise ValueError("Motivo inválido. Debe ser 'duda' o 'calzo'.")
 
         self.apuesta_actual = (0, None)
 
-    def _resolver_duda(self, arbitro, estado_cachos, existe_jugador_con_un_dado):
+    def _resolver_duda(self, arbitro, estado_cachos):
         """
         Resuelve una duda llamando al árbitro y actualizando los dados de los jugadores según el resultado.
         :param arbitro: Instancia del árbitro para resolver la duda.
         :param estado_cachos: Diccionario con el conteo de dados.
-        :param existe_jugador_con_un_dado: Booleano indicando si hay algún jugador con un solo dado.
         """
         if arbitro.resultado_duda(estado_cachos, self.__convertir(self.apuesta_actual[1]), self.apuesta_actual[0],
-                                  existe_jugador_con_un_dado):
+                                  self.ronda_obligar):
             self.jugadores[self.turno[-1]].quitar_dado()
             self.turno.rotate(1)
         else:
             self.jugadores[self.turno[0]].quitar_dado()
 
-    def _resolver_calzo(self, arbitro, estado_cachos, existe_jugador_con_un_dado):
+    def _resolver_calzo(self, arbitro, estado_cachos):
         """
         Resuelve un calzo llamando al árbitro y actualizando los dados del jugador actual según el resultado.
         :param arbitro: Instancia del árbitro para resolver el calzo.
         :param estado_cachos: Diccionario con el conteo de dados.
-        :param existe_jugador_con_un_dado: Booleano indicando si hay algún jugador con un solo dado.
         """
         if arbitro.resultado_calzo(estado_cachos, self.__convertir(self.apuesta_actual[1]), self.apuesta_actual[0],
-                                   existe_jugador_con_un_dado):
+                                   self.ronda_obligar):
             self.jugadores[self.turno[0]].agregar_dado()
         else:
             self.jugadores[self.turno[0]].quitar_dado()
 
-    def _determinar_jugador_eliminado(self):
+    def _determinar_jugador_eliminado_u_obligar(self):
         if len(self.jugadores[self.turno[0]].mirar()) == 0:
             self.turno = deque(i for i in self.turno if i != self.turno[0])
+        elif len(self.jugadores[self.turno[0]].mirar()) == 1:
+            if not self.obligar_usado[self.turno[0]]:
+                self.ronda_obligar = True
+                self.obligar_usado[self.turno[0]] = True
