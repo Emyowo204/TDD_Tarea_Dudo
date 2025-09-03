@@ -22,6 +22,7 @@ class GestorPartida:
         self.arbitro = ArbitroRonda()
         self.ronda_obligar = False
         self.obligar_usado = {i: False for i in range(num_jugadores)}
+        self.ganador = None
 
     __pintas = ['As', 'Tonto', 'Tren', 'Cuadra', 'Quina', 'Sexto']
 
@@ -146,6 +147,8 @@ class GestorPartida:
         """
         if len(self.jugadores[self.turno[0]].mirar()) == 0:
             self.turno = deque(i for i in self.turno if i != self.turno[0])
+            if len(self.turno) == 1:
+                self.ganador = self.turno[0]
         elif len(self.jugadores[self.turno[0]].mirar()) == 1 and not self.obligar_usado[self.turno[0]]:
             self.ronda_obligar = True
             self.obligar_usado[self.turno[0]] = True
