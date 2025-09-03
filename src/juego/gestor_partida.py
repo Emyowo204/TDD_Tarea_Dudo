@@ -27,11 +27,10 @@ class GestorPartida:
     __pintas = ['As', 'Tonto', 'Tren', 'Cuadra', 'Quina', 'Sexto']
 
     def __convertir(self, pinta):
-        numero = 0
-        for i in range(len(self.__pintas)):
-            if self.__pintas[i] == pinta:
-                numero = i+1
-        return numero
+        try:
+            return self.__pintas.index(pinta) + 1
+        except ValueError:
+            return 0
 
     def inicializar_jugadores(self):
         """
