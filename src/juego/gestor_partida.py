@@ -141,9 +141,11 @@ class GestorPartida:
             self.jugadores[self.turno[0]].quitar_dado()
 
     def _determinar_jugador_eliminado_u_obligar(self):
+        """
+        Determina si el jugador actual ha sido eliminado o si debe obligar en la próxima ronda.
+        """
         if len(self.jugadores[self.turno[0]].mirar()) == 0:
             self.turno = deque(i for i in self.turno if i != self.turno[0])
-        elif len(self.jugadores[self.turno[0]].mirar()) == 1:
-            if not self.obligar_usado[self.turno[0]]:
-                self.ronda_obligar = True
-                self.obligar_usado[self.turno[0]] = True
+        elif len(self.jugadores[self.turno[0]].mirar()) == 1 and not self.obligar_usado[self.turno[0]]:
+            self.ronda_obligar = True
+            self.obligar_usado[self.turno[0]] = True
